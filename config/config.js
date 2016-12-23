@@ -9,9 +9,9 @@ var config = {
       name: 'hello-nodeblog'
     },
     port: process.env.PORT || 3000,
-    db: 'mongodb://test:123456@ds050879.mlab.com:50879/club'
+    db: 'mongodb://localhost/nodeblog'
   },
-
+//db: 'mongodb://test:123456@ds050879.mlab.com:50879/club'
   test: {
     root: rootPath,
     app: {
