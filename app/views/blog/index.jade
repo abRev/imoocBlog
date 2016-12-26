@@ -18,7 +18,7 @@ block content
     each post in posts
         div.post
             h3.post-title
-                a(href='/posts/view/'+post._id,target='_blank')=post.title
+                a(href='/posts/view/'+post.slug)=post.title
             div.post-abstract
                 =truncate(post.content,160)
             div.post-meta

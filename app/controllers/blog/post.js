@@ -52,13 +52,96 @@ router.get('/category/:name', function (req, res, next) {
   });
 });
 
-router.get('/view', function (req, res, next) {
+router.get('/view/:id', function (req, res, next) {
+  if(!req.params.id){
+    return next(new Error('no post id !!!'));
+  }
+
+  var conditions = {};
+  try{
+    conditions._id = mongoose.Types.ObjectId(req.params.id);
+  }catch(err){
+    conditions.slug = req.params.id;
+  }
+
+  Post.findOne(conditions).populate('category').populate('author').exec(function(err,post){
+    if(err) return next(err);
+    res.render('blog/view',{
+      post:post,
+      pretty:true
+    });
+  });
 });
 
 
 router.get('/comment', function (req, res, next) {
 });
 
-router.get('/favourite', function (req, res, next) {
+router.get('/favourite/:param', function (req, res, next) {
+  if(req.xhr){
+    console.log('========>>>>>>>here');
+    if(!req.params.param){
+    return next(new Error('no post input!!!'));
+    }
+    let conditions = {};
+    try{
+      conditions._id = mongoose.Types.ObjectId(req.params.param);
+    }catch(err){
+      conditions.slug = req.params.param;
+    }
+
+    Post.findOne(conditions)
+      .populate('author')
+      .populate('category')
+      .exec(function(err,post){
+        if(err) return next(err);
+        post.meta.favorite=post.meta.favorite?post.meta.favorite+1:1;
+        post.markModified('meta');
+        post.save(function(err){
+          if(err){
+            next(err);
+            return res.json({success:'false'});
+          } 
+          res.json({success:'true'});
+        });
+    });
+  }else{
+    if(!req.params.param){
+      return next(new Error('no post input!!!'));
+    }
+    var conditions = {};
+    try{
+      conditions._id = mongoose.Types.ObjectId(req.params.param);
+    }catch(err){
+      conditions.slug = req.params.param;
+    }
+
+    Post.findOne(conditions)
+      .populate('author')
+      .populate('category')
+      .exec(function(err,post){
+        if(err) return next(err);
+        post.meta.favorite=post.meta.favorite?post.meta.favorite+1:1;
+        post.markModified('meta');
+        post.save(function(err){
+          if(err) return next(err);
+          res.render('blog/view',{
+            post:post,
+            pretty:true
+          });
+        });
+    });
+  }
+  
 });
+
+
+
+
+
+
+
+
+
+
 

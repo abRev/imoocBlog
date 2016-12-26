@@ -183,6 +183,22 @@ h6, .h6 {
   border-right:0;
 }
 
+.post-view .post-meta{
+  margin-bottom:20px;
+  padding-bottom:20px;
+  border-bottom:1px dotted #DDDDDD;
+  text-align:center;
+}
+
+
+.post-view .post-content{
+  text-indent:2em;
+  text-align:justify;
+}
+
+.post-view-header{
+  text-align:center;
+}
 /*
  * Footer
  */
