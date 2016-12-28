@@ -199,6 +199,20 @@ h6, .h6 {
 .post-view-header{
   text-align:center;
 }
+
+
+.post-comments,.post-comment-form{
+  margin-top:30px;
+}
+
+.post-comment-item {
+  padding:10px;
+  border:1px dotted #DDDDDD;
+  margin-bottom:10px;
+}
+.post-comment-email {
+  border-bottom:1px dotted #DDDDDD;
+}
 /*
  * Footer
  */

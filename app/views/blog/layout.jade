@@ -25,6 +25,7 @@ block main
     .container
         .row
             .col-sm-8.blog-main
+                !=messages()
                 block content
             .col-sm-3.col-sm-offset-1.blog-sidebar
                 .sidebar-module.sidebar-module-inset     
@@ -54,7 +55,7 @@ block main
     block footer
         footer.blog-footer
             p
-            | Blog template built for 
+            | Blog built for 
             a(href="http://getbootstrap.com") Bootstrap
             |  by 
-            a(href="https://twitter.com/mdo") @mdo
+            a(href="https://twitter.com/abang") @abang

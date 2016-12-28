@@ -10,6 +10,9 @@ var bodyParser = require('body-parser');
 var compress = require('compression');
 var methodOverride = require('method-override');
 
+var session = require('express-session');
+var flash = require('connect-flash');
+
 var mongoose = require('mongoose');
 var Category = mongoose.model('Category');
 
@@ -42,6 +45,20 @@ module.exports = function(app, config) {
     extended: true
   }));
   app.use(cookieParser());
+
+  app.use(session({
+    secret:'nodeBlog',
+    resave:false,
+    saveUninitialized:true,
+    cookie:{secure:false}
+  }));
+  app.use(flash());
+
+  app.use(function(req,res,next){
+    res.locals.messages = require('express-messages')(req,res);
+    next();
+  });
+
   app.use(compress());
   app.use(express.static(config.root + '/public'));
   app.use(methodOverride());

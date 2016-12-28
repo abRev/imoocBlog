@@ -74,22 +74,63 @@ router.get('/view/:id', function (req, res, next) {
 });
 
 
-router.get('/comment', function (req, res, next) {
+router.post('/comment/:id', function (req, res, next) {
+  if(!req.params.id){
+    return next(new Error('no id input on params'));
+  }
+  if(req.xhr){
+    var data="";
+    req.on('data',function(chunk){
+      data+=chunk;
+    });
+    req.on('end',function(){
+      console.log("====: "+data);
+      res.json({success:true});
+    });
+    
+  }else{
+    if(!req.body.email){
+      return next(new Error('请输入邮箱'));
+    }
+    if(!req.body.content){
+      return next(new Error('请输入内容'));
+    }
+    var conditions={};
+    try{
+      conditions._id=mongoose.Types.ObjectId(req.params.id);
+    }catch(err){
+      conditions.slug = req.params.id;
+    }
+    Post.findOne(conditions).exec(function(err,post){
+      if(err) return next(err);
+      var comment = {
+        email:req.body.email,
+        content:req.body.content,
+        created:new Date()
+      };
+      post.comments.unshift(comment);
+      post.markModified('comments');
+      post.save(function(err){
+        if(err) return next(err);
+          req.flash('info','添加成功');
+          res.redirect('/posts/view/'+post._id);
+      });
+    });
+  }  
 });
 
 router.get('/favourite/:param', function (req, res, next) {
-  if(req.xhr){
-    console.log('========>>>>>>>here');
-    if(!req.params.param){
+  if(!req.params.param){
     return next(new Error('no post input!!!'));
     }
-    let conditions = {};
+    var conditions = {};
     try{
       conditions._id = mongoose.Types.ObjectId(req.params.param);
     }catch(err){
       conditions.slug = req.params.param;
     }
 
+  if(req.xhr){
     Post.findOne(conditions)
       .populate('author')
       .populate('category')
@@ -106,16 +147,6 @@ router.get('/favourite/:param', function (req, res, next) {
         });
     });
   }else{
-    if(!req.params.param){
-      return next(new Error('no post input!!!'));
-    }
-    var conditions = {};
-    try{
-      conditions._id = mongoose.Types.ObjectId(req.params.param);
-    }catch(err){
-      conditions.slug = req.params.param;
-    }
-
     Post.findOne(conditions)
       .populate('author')
       .populate('category')
@@ -131,8 +162,7 @@ router.get('/favourite/:param', function (req, res, next) {
           });
         });
     });
-  }
-  
+  }  
 });
 
 
