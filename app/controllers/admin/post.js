@@ -4,7 +4,8 @@ var express = require('express'),
   mongoose = require('mongoose'),
   Post = mongoose.model('Post'),
   Category = mongoose.model('Category'),
-  User = mongoose.model('User');
+  User = mongoose.model('User'),
+  pinyin = require('pinyin');
 
 
  module.exports = function(app){
@@ -69,13 +70,43 @@ var express = require('express'),
 
  router.get('/add',function(req,res,next){
  	res.render('admin/posts/add',{
+ 		action:'/admin/posts/add',
+ 		pretty:true,
+ 		post:{
+ 			category:{_id:""}
+ 		},
  	});
  });
 
  router.post('/add',function(req,res,next){
+ 	req.checkBody('title','请输入文章标题').notEmpty();
+ 	req.checkBody('category','请选择分类').notEmpty();
+ 	req.checkBody('content','请输入文章内容').notEmpty();
+
+ 	var errors = req.validationErrors();
+
  	var title = req.body.title.trim();
- 	var category = mongoose.Types.ObjectId(req.body.category.trim());
+
  	var content = req.body.content;
+
+ 	var py = pinyin(title,{
+ 		style:pinyin.STYLE_NORMAL,
+ 		hateronym:false
+ 	}).map(function(item){
+ 		return item[0];
+ 	}).join(' ');
+
+ 	console.log(py);
+ 	if(errors.length>0){
+ 		for(var error in errors){
+ 			req.flash('alert alert-danger',errors[error].msg);
+ 		}
+ 		return res.render('admin/posts/add',{
+ 			title:title,
+ 			content:content,
+ 		});
+ 	}
+ 	var category = mongoose.Types.ObjectId(req.body.category.trim());
  	User.findOne({}).exec(function(err,author){
  		if(err) return next(err);
  		//Category.findOne({_id:category}).exec(function(err,_category){
@@ -85,13 +116,12 @@ var express = require('express'),
 	 			content:content,
 	 			category:category,
 	 			author:author,
-	 			slug:slug(title),
+	 			slug:slug(py),
 	 			created:new Date(),
 	 			meta:{favorites:0},
 	 			comments:[],
 	 			published:true
 	 		});
-	 		console.log(post);
 	 		post.save(function(err,post){
 	 			if(err){
 	 				req.flash('error','文章保存失败');
@@ -106,11 +136,38 @@ var express = require('express'),
  });
 
 
-router.get('/edit/:id',function(req,res,next){
-	
+router.get('/edit/:id',getPostById,function(req,res,next){
+	res.render('admin/posts/add',{
+		action:'/admin/posts/edit/'+req.post._id,
+		post:req.post
+	});	
 });
-router.post('/edit/:id',function(req,res,next){
-	
+router.post('/edit/:id',getPostById,function(req,res,next){
+	var post = req.post;
+	var title = req.body.title.trim();
+	var category = req.body.category.trim();
+	var content = req.body.content;
+	var py = pinyin(title,{
+ 		style:pinyin.STYLE_NORMAL,
+ 		hateronym:false
+ 	}).map(function(item){
+ 		return item[0];
+ 	}).join(' ');
+
+ 	post.title = title;
+ 	post.category = category;
+ 	post.content = content;
+ 	post.slug = slug(py);
+ 	post.save(function(err,post){
+ 		if(err){
+ 			req.flash('error','文章编辑失败');
+ 			res.redirect('/admin/posts/edit/'+post._id);
+ 		}else{
+ 			req.flash('error','文章编辑成功');
+ 			res.redirect('/admin/posts');
+ 		}
+ 	});
+
 });
 
 router.get('/delete/:id',function(req,res,next){
@@ -127,3 +184,23 @@ router.get('/delete/:id',function(req,res,next){
 		res.redirect('back');
 	});
 });
+
+function getPostById(req,res,next){
+	if(!req.params.id){
+		return next(new Error('no post id provided'));
+	}
+	Post.findOne({_id:req.params.id})
+		.populate('category')
+		.populate('author')
+		.exec(function(err,post){
+			if(err){
+				return next(err);
+			} 
+			if(!post){
+				return next(new Error('post not found: ',req.params._id));
+			}
+
+			req.post = post;
+			next();
+		});
+}
