@@ -27,7 +27,7 @@ block content
                     span.favoriteNode
                         =post.meta.favorite|| 0
         div.post-content
-            =post.content
+            !=post.content
     div.ds-thread(data-thread-key="#{post._id}", data-title="#{post.title}", data-url="http://42.96.159.91:3000/posts/view/#{post.slug}")
 
     div.post-comments

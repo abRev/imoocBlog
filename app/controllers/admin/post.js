@@ -1,5 +1,6 @@
 var express = require('express'),
   router = express.Router(),
+  slug = require('slug'),
   mongoose = require('mongoose'),
   Post = mongoose.model('Post'),
   Category = mongoose.model('Category'),
@@ -68,12 +69,40 @@ var express = require('express'),
 
  router.get('/add',function(req,res,next){
  	res.render('admin/posts/add',{
-
  	});
  });
 
  router.post('/add',function(req,res,next){
- 	
+ 	var title = req.body.title.trim();
+ 	var category = mongoose.Types.ObjectId(req.body.category.trim());
+ 	var content = req.body.content;
+ 	User.findOne({}).exec(function(err,author){
+ 		if(err) return next(err);
+ 		//Category.findOne({_id:category}).exec(function(err,_category){
+ 			if(err) return next(err);
+	 		var post = new Post({
+	 			title:title,
+	 			content:content,
+	 			category:category,
+	 			author:author,
+	 			slug:slug(title),
+	 			created:new Date(),
+	 			meta:{favorites:0},
+	 			comments:[],
+	 			published:true
+	 		});
+	 		console.log(post);
+	 		post.save(function(err,post){
+	 			if(err){
+	 				req.flash('error','文章保存失败');
+	 				res.redirect('/admin/posts/add');
+	 			}
+	 			req.flash('info','文章保存成功');
+	 			res.redirect('/posts/view/'+post._id);
+	 		});
+ 		//});
+ 		
+ 	});
  });
 
 
@@ -95,6 +124,6 @@ router.get('/delete/:id',function(req,res,next){
 		}else{
 			req.flash('info','文章删除失败');
 		}
-		res.redirect(' back');
+		res.redirect('back');
 	});
 });
