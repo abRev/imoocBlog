@@ -1,6 +1,12 @@
 extends ../layout
 
 block content
-    h2.page-header 添加分类
+    h2.page-header=category._id!==''?"编辑分类":"添加分类"
+
+    form.vertical-form(method='post',action=action)
+        div.form-group
+            label(for='name') 标题
+            input.form-control.input-lg(name='name',placeholder='请输入分类名。。。',value= category.name?category.name:'')
+        button.btn.btn-lg.btn-info(type='submit')= category._id!=='' ? "保存" : "发布"
 block scripts
     script $(document).ready(function(){console.log('dom ready')})
