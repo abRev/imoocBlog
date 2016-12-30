@@ -13,14 +13,16 @@
 		if(!str){
 			return {};
 		}
-		return str.split('&').map(function(ret,param){
+		console.log(str.split('&'));
+		return str.split('&').reduce(function(ret,param){
+			console.log('here');
 			var parts = param.replace(/\+/g,' ').split('=');
 			var key = parts.shift();
 			var val = parts.length > 0?parts.join('='):undefined;
 			key = decodeURIComponent(key);
 			val = val === undefined ? null : decodeURIComponent(val);
 
-			if(!req.hasOwnProperty(key)){
+			if(!ret.hasOwnProperty(key)){
 				ret[key] = val;
 			}else if(Array.isArray(ret[key])){
 				ret[key].push(val);

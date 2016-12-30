@@ -53,6 +53,9 @@ var express = require('express'),
 	 		if(pageNum>pageCount){
 	 			pageNum = pageCount;
 	 		}
+	 		if(pageNum<1){
+	 			pageNum=1;
+	 		}
 	 		console.log(authors);
 	 		res.render('admin/posts/index',{
 	 			title:'文章列表',

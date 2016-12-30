@@ -10,7 +10,7 @@ var bodyParser = require('body-parser');
 var compress = require('compression');
 var methodOverride = require('method-override');
 var validator = require('express-validator');
-
+var passport = require('passport');
 var session = require('express-session');
 var flash = require('connect-flash');
 
@@ -69,6 +69,12 @@ module.exports = function(app, config) {
     saveUninitialized:true,
     cookie:{secure:false}
   }));
+
+
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  
   app.use(flash());
 
   app.use(function(req,res,next){
