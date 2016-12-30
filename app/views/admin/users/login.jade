@@ -1,0 +1,17 @@
+extends ../layout_user
+
+block content
+    form.form-signin(method='post',action='/admin/users/login')
+        h2.form-signin-heading 管理员登录
+            small.pull-right
+                a(href='/admin/users/register') 注册
+        label.sr-only(for="eamil") 邮箱
+        input.email.form-control(name='email',type="email", placeholder="Email address", required="", autofocus="",value= email?email:"") 
+
+        label.sr-only(for="password") 密码    
+        input.password.form-control(name='password',type="password", placeholder="Password", required="")       
+        .checkbox
+            label
+                input(type="checkbox", value="remember-me")
+                |  记住登录邮箱  
+        button.btn.btn-lg.btn-primary.btn-block(type="submit") 登录

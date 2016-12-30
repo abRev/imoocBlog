@@ -66,7 +66,9 @@ body {
   background-color: #428bca;
 }
 
-
+.form-group {
+  margin-right:10px;
+}
 /*
  * Main content
  */

@@ -34,6 +34,10 @@ var express = require('express'),
  	if(req.query.author){
  		conditions.author = req.query.author.trim();
  	}
+ 	if(req.query.keyword){
+ 		conditions.title = new RegExp(req.query.keyword,'i');
+ 		conditions.content = new RegExp(req.query.keyword,'i');
+ 	}
  	User.find({}).exec(function(err,authors){
  		if(err) return next(err);
  		Post.find(conditions)
@@ -60,7 +64,8 @@ var express = require('express'),
 	 			posts:posts.slice((pageNum-1)*pageSize,pageNum*pageSize),
 	 			filter:{
 	 				category:req.query.category || '',
-	 				author:req.query.author|| ""
+	 				author:req.query.author|| "",
+	 				keyword:req.query.keyword || '' 
 	 			}
 	 		});
 	 	});
@@ -102,6 +107,7 @@ var express = require('express'),
  			req.flash('alert alert-danger',errors[error].msg);
  		}
  		return res.render('admin/posts/add',{
+ 			post:{category:{_id:""}},
  			title:title,
  			content:content,
  		});

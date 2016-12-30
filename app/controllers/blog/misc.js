@@ -12,9 +12,13 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/about', function (req, res, next) {
-
+	res.render('blog/about',{
+		title:'关于'
+	});
 });
 
 router.get('/contact', function (req, res, next) {
-
+res.render('blog/contact',{
+		title:'联系'
+	});
 });

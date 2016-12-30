@@ -22,11 +22,17 @@ $(document).ready(function () {
 			delete query.author;
 		}
 
-		window.location.url = window.location.origin+window.location.pathname;
+		if(keyword){
+			query.keyword = keyword;
+		}else{
+			delete query.keyword;
+		}
+
+		console.log(window.location.origin);
+		console.log(window.location.pathname);
+		console.log(query);
+
+		window.location.url = window.location.origin+window.location.pathname+query;
 
 	});
-	// add page
-	// if(CKEDITOR){
-	// 	CKEDITOR.replace('js-post-content');
-	// }
 });

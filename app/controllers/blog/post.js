@@ -9,11 +9,19 @@ module.exports = function (app) {
 };
 
 router.get('/', function (req, res, next) {
-  Post.find()
+  var conditions = {published:true};
+  if(req.query.keyword){
+    conditions.title = new RegExp(req.query.keyword,'i');
+    conditions.content = new RegExp(req.query.keyword,'i');
+  }
+  console.log(conditions);
+  Post.find(conditions)
     .sort('-created')
     .populate('author')
     .populate('category')
     .exec(function (err, posts) {
+
+      console.log(posts.length);
       if (err) return next(err);
 
       var pageNum = Math.abs(parseInt(req.query.page||1,10));

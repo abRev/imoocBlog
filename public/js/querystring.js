@@ -13,7 +13,7 @@
 		if(!str){
 			return {};
 		}
-		return str.split('&').reduce(function(ret,param){
+		return str.split('&').map(function(ret,param){
 			var parts = param.replace(/\+/g,' ').split('=');
 			var key = parts.shift();
 			var val = parts.length > 0?parts.join('='):undefined;

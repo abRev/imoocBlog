@@ -6,7 +6,7 @@ block content
     form.vertical-form(method='post',action=action)
         div.form-group
             label(for='title') 标题
-            input.form-control.input-lg(name='title',placeholder='请输入标题。。。',value=post?post.title:title?title:'')
+            input.form-control.input-lg(name='title',placeholder='请输入标题。。。',value=title?title:post?post.title:'')
         div.form-group
             label(for='category') 分类
             select.form-control.input-lg(name='category')
@@ -16,7 +16,7 @@ block content
         div.form-group
             label(for='content') 内容
             textarea#js-post-content.form-control(name='content')
-                =post?post.content:content?content:""
+                =content?content: post?post.content:""
         button.btn.btn-lg.btn-info(type='submit')= post ? "保存" : "发布"
 block scripts
     script(src='/js/ckeditor/ckeditor.js')
