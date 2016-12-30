@@ -21,18 +21,20 @@ block main
             |         
             #navbar.navbar-collapse.collapse
                 ul.nav.navbar-nav.navbar-right
-                    li
-                        a(href="/admin/users/logout") 
-                            i.fa.fa-lock
-                            | &nbsp注销
+                    if user
+                        li
+                            a=user.name
+                        li
+                            a(href="/admin/users/logout") 
+                                i.fa.fa-lock
+                                | &nbsp注销
                     |             
                     li
                         a(href="#") 
                             i.fa.fa-question
                             | &nbsp 帮助
                 |           
-                form.navbar-form.navbar-right
-                    input.form-control(type="text", placeholder="Search...")     
+    
     .container-fluid
         .row
             .col-sm-3.col-md-2.sidebar

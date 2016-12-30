@@ -14,6 +14,14 @@ var express = require('express'),
  	app.use('/admin/users',router);
  };
 
+module.exports.requireLogin = function(req,res,next){
+	if(req.user){
+		next();
+	}else{
+		next(new Error('登陆用户才能访问'));
+	}
+};
+
  router.get('/login',function(req,res,next){
  	res.render('admin/users/login',{
  		title:'登录',
@@ -118,7 +126,7 @@ var express = require('express'),
 		 				email:email
 		 			});
 		 		}else{
-		 			req.flash('alert alert-danger','注册失败（未知原因）');
+		 			req.flash('alert alert -danger','注册失败（未知原因）');
 		 			res.render('admin/users/register',{
 		 				name:name,
 		 				email:email,
@@ -139,5 +147,6 @@ var express = require('express'),
  });
  
  router.get('/logout',function(req,res,next){
+ 	req.logout();
  	res.redirect('/');
  });

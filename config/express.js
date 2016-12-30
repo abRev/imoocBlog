@@ -13,11 +13,12 @@ var validator = require('express-validator');
 var passport = require('passport');
 var session = require('express-session');
 var flash = require('connect-flash');
-
+var MongoStore = require('connect-mongo')(session);
 var mongoose = require('mongoose');
 var Category = mongoose.model('Category');
+var User = mongoose.model('User');
 
-module.exports = function(app, config) {
+module.exports = function(app, config,connection) {
   var env = process.env.NODE_ENV || 'development';
   app.locals.ENV = env;
   app.locals.ENV_DEVELOPMENT = env == 'development';
@@ -67,18 +68,34 @@ module.exports = function(app, config) {
     secret:'nodeBlog',
     resave:false,
     saveUninitialized:true,
-    cookie:{secure:false}
+    cookie:{secure:false},
+    store:new MongoStore({mongooseConnection:connection})
   }));
 
 
   app.use(passport.initialize());
   app.use(passport.session());
 
-  
+  app.use(function(req,res,next){
+    if(req.session.passport && req.session.passport.user){
+      req.user =null;
+      User.findById(req.session.passport.user,function(err,user){
+        if(err) return next(err);
+        user.password = null;
+        req.user = user;
+        next();
+      });
+
+    }else{
+      next(); 
+    }
+  });
   app.use(flash());
 
   app.use(function(req,res,next){
     res.locals.messages = require('express-messages')(req,res);
+    res.locals.user = req.user;
+    console.log(req.session,res.locals.user);
     next();
   });
 

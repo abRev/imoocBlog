@@ -5,19 +5,19 @@ var express = require('express'),
   pinyin = require('pinyin'),
   slug = require('slug'),
   Category = mongoose.model('Category');
-
+ var auth = require('./user').requireLogin;
 
  module.exports = function(app){
  	app.use('/admin/categories',router);
  };
 
- router.get('/',function(req,res,next){
+ router.get('/',auth,function(req,res,next){
  	res.render('admin/categories/index',{
  		pretty:true
  	});
  });
 
- router.get('/add',function(req,res,next){
+ router.get('/add',auth,function(req,res,next){
  	res.render('admin/categories/add',{
  		pretty:true,
  		action:'/admin/categories/add',
@@ -25,7 +25,7 @@ var express = require('express'),
  	});
  });
 
- router.post('/add',function(req,res,next){
+ router.post('/add',auth,function(req,res,next){
  	req.checkBody('name','请添加分类名').notEmpty();
 
  	var errors = req.validationErrors();
@@ -64,7 +64,7 @@ var express = require('express'),
  });
 
 
-router.get('/delete/:id',getCategoryById, function(req,res,next){
+router.get('/delete/:id',auth,getCategoryById, function(req,res,next){
 	var category = req.category;
 	req.category.remove(function(err,rowsRemoved){
 		if(err) return next(err);
@@ -85,14 +85,14 @@ router.get('/delete/:id',getCategoryById, function(req,res,next){
 	});
 });
 
-router.get('/edit/:id',getCategoryById,function(req,res,next){
+router.get('/edit/:id',auth,getCategoryById,function(req,res,next){
 	res.render('admin/categories/add',{
 		action:'/admin/categories/edit/'+req.category._id,
 		pretty:true,
 		category:req.category
 	});
 });
-router.post('/edit/:id',getCategoryById,function(req,res,next){
+router.post('/edit/:id',auth,getCategoryById,function(req,res,next){
 	var category = req.category;
 	var name = req.body.name.trim();
 	var py = pinyin(name,{

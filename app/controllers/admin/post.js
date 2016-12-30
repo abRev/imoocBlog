@@ -7,12 +7,14 @@ var express = require('express'),
   User = mongoose.model('User'),
   pinyin = require('pinyin');
 
+ var auth = require('./user').requireLogin;
+
 
  module.exports = function(app){
  	app.use('/admin/posts',router);
  };
 
- router.get('/',function(req,res,next){
+ router.get('/',auth,function(req,res,next){
  	//sort
  	var sortBy = req.query.sortBy?req.query.sortBy:'title';
  	var sortDir = req.query.sortDir?req.query.sortDir:'desc';
@@ -76,7 +78,7 @@ var express = require('express'),
  	
  });
 
- router.get('/add',function(req,res,next){
+ router.get('/add',auth,function(req,res,next){
  	res.render('admin/posts/add',{
  		action:'/admin/posts/add',
  		pretty:true,
@@ -86,7 +88,7 @@ var express = require('express'),
  	});
  });
 
- router.post('/add',function(req,res,next){
+ router.post('/add',auth,function(req,res,next){
  	req.checkBody('title','请输入文章标题').notEmpty();
  	req.checkBody('category','请选择分类').notEmpty();
  	req.checkBody('content','请输入文章内容').notEmpty();
@@ -145,13 +147,13 @@ var express = require('express'),
  });
 
 
-router.get('/edit/:id',getPostById,function(req,res,next){
+router.get('/edit/:id',auth,getPostById,function(req,res,next){
 	res.render('admin/posts/add',{
 		action:'/admin/posts/edit/'+req.post._id,
 		post:req.post
 	});	
 });
-router.post('/edit/:id',getPostById,function(req,res,next){
+router.post('/edit/:id',auth,getPostById,function(req,res,next){
 	var post = req.post;
 	var title = req.body.title.trim();
 	var category = req.body.category.trim();
@@ -179,7 +181,7 @@ router.post('/edit/:id',getPostById,function(req,res,next){
 
 });
 
-router.get('/delete/:id',function(req,res,next){
+router.get('/delete/:id',auth,function(req,res,next){
 	if(!req.params.id){
 		return next(err);
 	}
