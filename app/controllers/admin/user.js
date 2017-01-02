@@ -18,7 +18,8 @@ module.exports.requireLogin = function(req,res,next){
 	if(req.user){
 		next();
 	}else{
-		next(new Error('登陆用户才能访问'));
+		req.flash('alert alert-danger','需要登录才能访问');
+		res.redirect('/admin/users/login');
 	}
 };
 
@@ -28,7 +29,10 @@ module.exports.requireLogin = function(req,res,next){
  		pretty:true
  	});
  });
- router.post('/login',passport.authenticate('local', { failureRedirect: '/admin/users/login' }),
+ router.post('/login',passport.authenticate('local', { 
+ 	failureRedirect: '/admin/users/login' ,
+ 	failureFlash:'用户名或者密码错误'
+ 	}),
  	function(req,res,next){
  		res.redirect('/admin/posts');
  	
